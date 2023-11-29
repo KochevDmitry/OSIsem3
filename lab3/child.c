@@ -35,20 +35,24 @@ void quit(){
 }
 
 int main (int argc, const char *argv[]){
-    int a = atoi(argv[1]);
-	int out = 0;
-	if (a == 1) {
-		out = open("first_mmf.txt", O_RDWR);
-	}
-	else {
-		out = open("second_mmf.txt", O_RDWR);
-	}
+    // int a = atoi(argv[1]);
+
+    int out = atoi(argv[1]);
+	// int out = 0;
+	// if (a == 1) {
+	// 	out = open("first_mmf.txt", O_RDWR);
+	// }
+	// else {
+	// 	out = open("second_mmf.txt", O_RDWR);
+	// }
+
 	char *file_mmf =  mmap(NULL, 500*sizeof(int),  PROT_WRITE |PROT_READ , MAP_SHARED ,out,0);
 	if (file_mmf == NULL) {
 		perror ("Ошибка mmap\n");
 	}
 
     file_mmf_global = file_mmf;
+    
 	// int c;
     // printf("ЯЯ здесььь\n");
 	// for (int i = 0 ; i < 500*sizeof(int); i++) {
