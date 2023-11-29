@@ -61,21 +61,11 @@ int main (){
 	}
 
     int fd_for_input = open("first_mmf.txt", O_RDWR | O_CREAT | O_TRUNC , 0777);
-	// struct stat sb;
-	ftruncate (fd_for_input , 500*sizeof(int)); // Изменяет длинну файла на нужную
-	// if (fstat(fd_for_input, &sb) ==  -1) {
-	// 	perror ("Не удалось узнать длинну файла \n");
-	// }
-	//printf ("Длинна файла равна %ld", sb.st_size);
+	ftruncate (fd_for_input , 500*sizeof(int));
 	char *file_mmf =  mmap(NULL, 500*sizeof(int), PROT_WRITE | PROT_READ , MAP_SHARED ,fd_for_input,0);
 
 	int fd_for_input2 = open("second_mmf.txt", O_RDWR | O_CREAT | O_TRUNC , 0777);
-	// struct stat sb2;
 	ftruncate (fd_for_input2 , 500*sizeof(int)); // Изменяет длинну файла на нужную
-	// if (fstat(fd_for_input2, &sb2) ==  -1) {
-	// 	perror ("Не удалось узнать длинну файла \n");
-	// }
-	//printf ("Длинна файла равна %ld", sb.st_size);
 	char *file_mmf2 =  mmap(NULL, 500*sizeof(int), PROT_WRITE | PROT_READ , MAP_SHARED ,fd_for_input2,0);
 
 	pid_t id = fork();
@@ -138,19 +128,11 @@ int main (){
 			if (c == '\n'){	
                 if (flag % 2 == 0){
                     msync(file_mmf, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
-                    // printf("here1\n");
-                    // for(int y = 0; y < 100; y++)
-                    //     printf("%c", file_mmf[y]);
-                    // printf("\n");
-					kill(id, SIGUSR1);
+			kill(id, SIGUSR1);
                 }
                 else{
                     msync(file_mmf2, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
-                    // printf("here2\n");
-                    // for(int y = 0; y < 100; y++)
-                    //     printf("%c", file_mmf2[y]);
-                    // printf("\n");
-					kill(id2, SIGUSR1);
+			kill(id2, SIGUSR1);
                 }
 				flag ++;
 			}
