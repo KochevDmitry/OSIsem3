@@ -61,10 +61,12 @@ int main (){
 	}
 
     int fd_for_input = open("first_mmf.txt", O_RDWR | O_CREAT | O_TRUNC , 0777);
+    // printf("%d \n", fd_for_input);
 	ftruncate (fd_for_input , 500*sizeof(int));
 	char *file_mmf =  mmap(NULL, 500*sizeof(int), PROT_WRITE | PROT_READ , MAP_SHARED ,fd_for_input,0);
 
 	int fd_for_input2 = open("second_mmf.txt", O_RDWR | O_CREAT | O_TRUNC , 0777);
+    // printf("%d \n", fd_for_input2);
 	ftruncate (fd_for_input2 , 500*sizeof(int)); // Изменяет длинну файла на нужную
 	char *file_mmf2 =  mmap(NULL, 500*sizeof(int), PROT_WRITE | PROT_READ , MAP_SHARED ,fd_for_input2,0);
 
@@ -73,9 +75,9 @@ int main (){
         if (dup2(out, STDOUT_FILENO) == -1){ // fileno(stdout)
 			perror ("dup2");
 		}
-		dup2(out,fileno(stdout));
-        char str1[1];
-        str1[0] = '1';
+        char str1[sizeof(int)];
+        // str1[0] = '1';
+        sprintf(str1, "%d", fd_for_input); // int в строку чаров 
 		execl("./child", "./child", str1, NULL);
 		perror("execl");
         printf("lox");
@@ -89,8 +91,9 @@ int main (){
 		if (dup2(out2, STDOUT_FILENO) == -1){ // fileno(stdout)
 			perror ("dup2");
 		}
-        char str2[1];
-        str2[0] = '2';
+        char str2[sizeof(int)];
+        // str2[0] = '2';
+        sprintf(str2, "%d", fd_for_input2);
 		execl("./child", "./child", str2, NULL);
 		perror("execl"); 
         printf("lox2");   
@@ -128,11 +131,19 @@ int main (){
 			if (c == '\n'){	
                 if (flag % 2 == 0){
                     msync(file_mmf, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
-			kill(id, SIGUSR1);
+                    // printf("here1\n");
+                    // for(int y = 0; y < 100; y++)
+                    //     printf("%c", file_mmf[y]);
+                    // printf("\n");
+					kill(id, SIGUSR1);
                 }
                 else{
                     msync(file_mmf2, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
-			kill(id2, SIGUSR1);
+                    // printf("here2\n");
+                    // for(int y = 0; y < 100; y++)
+                    //     printf("%c", file_mmf2[y]);
+                    // printf("\n");
+					kill(id2, SIGUSR1);
                 }
 				flag ++;
 			}
