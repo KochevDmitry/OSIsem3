@@ -14,7 +14,7 @@ char * file_mmf_global;
 int i_global = 0;
 
 void writer(){
-    msync(file_mmf_global, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
+    // msync(file_mmf_global, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
     int c;
     for (int i = i_global ; i < 500*sizeof(int); i++) {
         // printf("ЯЯ здесьььuuuuuuuuuu\n");
