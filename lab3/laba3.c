@@ -59,6 +59,11 @@ int main (){
 		perror ("There is no such file \n");
 		return -1;
 	}
+	
+
+	//очистка память названия файлов
+	free(first_file);
+	free(second_file);
 
     int fd_for_input = open("first_mmf.txt", O_RDWR | O_CREAT | O_TRUNC , 0777);
     // printf("%d \n", fd_for_input);
