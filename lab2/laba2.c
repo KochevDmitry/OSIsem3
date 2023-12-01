@@ -3,7 +3,6 @@
 #include <pthread.h>
 #include <time.h>
 
-#define MAX_SIZE 1000
 
 typedef struct {
     int parami;
@@ -128,6 +127,10 @@ int main(int argc, char* argv[]){
         return 1;
     }
     int max_threads = atoi(argv[1]);
+    if (max_threads <= 0){
+        printf("Number of threads must be more then 0\n");
+        return 1;
+    }
     printf("Please enter the matrix dimension: ");
     scanf("%d", &n);
 
@@ -189,5 +192,8 @@ int main(int argc, char* argv[]){
     printf("Ответ: %d \n", det_final);
 
     freeMemory();
+    free(determinant);
+    free(threads);
+
         
 }
