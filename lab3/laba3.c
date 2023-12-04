@@ -88,7 +88,6 @@ int main (){
         // sprintf(str1, "%d", fd_for_input); // int в строку чаров 
 		execl("./child", "./child", str1, NULL);
 		perror("execl");
-        printf("lox");
 	}
     else if (id < 0){
         perror ("fork\n");
@@ -103,8 +102,7 @@ int main (){
         str2[0] = '2';
         // sprintf(str2, "%d", fd_for_input2);
 		execl("./child", "./child", str2, NULL);
-		perror("execl"); 
-        printf("lox2");   
+		perror("execl");  
 	}
     else if (id2 < 0){
         perror ("fork\n");
