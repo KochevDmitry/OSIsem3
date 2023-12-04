@@ -10,6 +10,9 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+#define MEMORY_NAME1 "first_mmf"
+#define MEMORY_NAME2 "second_mmf"
+
 char* get_fileaname() {
     int len = 0;
     int capacity = 1;
@@ -43,7 +46,7 @@ int main (){
 		perror ("Large file name or no memory \n");
 		return -1;
 	}
-	int out = open(first_file,O_WRONLY| O_CREAT | O_TRUNC , 0666);
+	int out = open(first_file, O_WRONLY| O_CREAT | O_TRUNC , S_IWUSR);
 	if (out == -1) {
 		perror ("There is no such file \n");
 		return -1;
@@ -54,7 +57,7 @@ int main (){
 		perror ("Large file name or no memory\n");
 		return -1;
 	}
-	int out2 = open(second_file,O_WRONLY| O_CREAT | O_TRUNC , 0666);
+	int out2 = open(second_file, O_WRONLY| O_CREAT | O_TRUNC , S_IWUSR);
 	if (out2 == -1) {
 		perror ("There is no such file \n");
 		return -1;
@@ -65,12 +68,12 @@ int main (){
 	free(first_file);
 	free(second_file);
 
-    int fd_for_input = open("first_mmf.txt", O_RDWR | O_CREAT | O_TRUNC , 0777);
+    int fd_for_input = shm_open(MEMORY_NAME1, O_RDWR | O_CREAT | O_TRUNC , 0777);
     // printf("%d \n", fd_for_input);
 	ftruncate (fd_for_input , 500*sizeof(int));
 	char *file_mmf =  mmap(NULL, 500*sizeof(int), PROT_WRITE | PROT_READ , MAP_SHARED ,fd_for_input,0);
 
-	int fd_for_input2 = open("second_mmf.txt", O_RDWR | O_CREAT | O_TRUNC , 0777);
+	int fd_for_input2 = shm_open(MEMORY_NAME2, O_RDWR | O_CREAT | O_TRUNC , 0777);
     // printf("%d \n", fd_for_input2);
 	ftruncate (fd_for_input2 , 500*sizeof(int)); // Изменяет длинну файла на нужную
 	char *file_mmf2 =  mmap(NULL, 500*sizeof(int), PROT_WRITE | PROT_READ , MAP_SHARED ,fd_for_input2,0);
@@ -81,8 +84,8 @@ int main (){
 			perror ("dup2");
 		}
         char str1[sizeof(int)];
-        // str1[0] = '1';
-        sprintf(str1, "%d", fd_for_input); // int в строку чаров 
+        str1[0] = '1';
+        // sprintf(str1, "%d", fd_for_input); // int в строку чаров 
 		execl("./child", "./child", str1, NULL);
 		perror("execl");
         printf("lox");
@@ -97,8 +100,8 @@ int main (){
 			perror ("dup2");
 		}
         char str2[sizeof(int)];
-        // str2[0] = '2';
-        sprintf(str2, "%d", fd_for_input2);
+        str2[0] = '2';
+        // sprintf(str2, "%d", fd_for_input2);
 		execl("./child", "./child", str2, NULL);
 		perror("execl"); 
         printf("lox2");   
@@ -135,7 +138,7 @@ int main (){
 
 			if (c == '\n'){	
                 if (flag % 2 == 0){
-                    msync(file_mmf, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
+                    // msync(file_mmf, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
                     // printf("here1\n");
                     // for(int y = 0; y < 100; y++)
                     //     printf("%c", file_mmf[y]);
@@ -143,7 +146,7 @@ int main (){
 					kill(id, SIGUSR1);
                 }
                 else{
-                    msync(file_mmf2, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
+                    // msync(file_mmf2, 500*sizeof(int), MS_SYNC| MS_INVALIDATE);
                     // printf("here2\n");
                     // for(int y = 0; y < 100; y++)
                     //     printf("%c", file_mmf2[y]);
@@ -156,8 +159,10 @@ int main (){
 		}
         kill(id, SIGUSR2);
         kill(id2, SIGUSR2);
-		remove ("first_mmf.txt");
-		remove ("second_mmf.txt");
+		close(fd_for_input);
+		close(fd_for_input2);
+		unlink(file_mmf);
+		unlink(file_mmf2);
 		// wait(NULL);
 	}
 }
