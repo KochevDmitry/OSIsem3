@@ -8,7 +8,10 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/mman.h>
-#include <sys/stat.h>   
+#include <sys/stat.h> 
+
+#define MEMORY_NAME1 "first_mmf"
+#define MEMORY_NAME2 "second_mmf"
 
 char * file_mmf_global;
 int i_global = 0;
@@ -31,20 +34,21 @@ void writer(){
 }
 
 void quit(){
+	unlink(file_mmf_global);
     exit(0);
 }
 
 int main (int argc, const char *argv[]){
-    // int a = atoi(argv[1]);
+    int a = atoi(argv[1]);
 
-    int out = atoi(argv[1]);
-	// int out = 0;
-	// if (a == 1) {
-	// 	out = open("first_mmf.txt", O_RDWR);
-	// }
-	// else {
-	// 	out = open("second_mmf.txt", O_RDWR);
-	// }
+    // int out = atoi(argv[1]);	
+	int out = 0;
+	if (a == 1) {
+		out = shm_open(MEMORY_NAME1, O_RDWR, S_IRUSR);
+	}
+	else {
+		out = shm_open(MEMORY_NAME2, O_RDWR, S_IRUSR);
+	}
 
 	char *file_mmf =  mmap(NULL, 500*sizeof(int),  PROT_WRITE |PROT_READ , MAP_SHARED ,out,0);
 	if (file_mmf == NULL) {
