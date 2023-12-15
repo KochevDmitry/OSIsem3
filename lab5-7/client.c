@@ -4,7 +4,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <zmq.h> // gcc server.c -o server -lzmq
+#include <zmq.h> // gcc client.c -o client -lzmq
 
 int id;
 
@@ -66,9 +66,20 @@ int main(int argc, const char *argv[]){
                 free(array);
             }
         }
+        else if(strcmp(command, "kill") == 0){
+            sscanf(buffer, "%*s %d", &arg1);
+            if (id == arg1){
+                printf("Node %d: kill myself\n", id);
+                break;
+            }
+        }
 
-        if (strcmp(command, "kill") == 0){ // когда строка равна "kill"
-            break;
+        if (strcmp(command, "killall") == 0){ // когда строка равна "killall"
+            sscanf(buffer, "%*s %d", &arg1);
+            if (arg1 == 1234) // пароль :)
+                break;
         }
     }
+    zmq_close(subscriber);
+    zmq_ctx_destroy(context);
 }
