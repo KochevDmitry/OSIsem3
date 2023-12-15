@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <stdbool.h>
 
 
 typedef struct TNode {
     int data;
     struct TNode *firstChild; // указатель на первого потомка
     struct TNode *nextBrother; // указатель на следующего брата
+    bool exist;
 } TNode;
 
 
@@ -14,6 +16,7 @@ TNode *createNode(int data) {
         newNode->data = data;
         newNode->firstChild = NULL;
         newNode->nextBrother = NULL;
+        newNode->exist = true;
     }
     return newNode;
 }
@@ -41,7 +44,7 @@ void addChild(TNode *parent, int data) {
 //  addChild(root, 2);
 
 
-int findPath(TNode *currentNode, int targetData, int *path, int depth) {
+int findPath(TNode *currentNode, int targetData, int *path, int depth) { // дорога до узла с нужным значением
     if (currentNode == NULL) {
         return 0;
     }
@@ -141,7 +144,7 @@ TNode* find_node(TNode *root, int data) {
         return NULL; // Дошли до конца поддерева, узел не найден
     }
 
-    if (root->data == data) {
+    if (root->data == data && root->exist == true) { // root->exist == true убрать и тогда нельзя создавать прошлые
         return root; // Узел найден
     }
 
@@ -179,7 +182,10 @@ void printTree(TNode* root, int depth) { // глубина всегда в на�
     for (int i = 0; i < depth; ++i) {
         printf("  ");
     }
-    printf("%d\n", root->data);
+    printf("%d", root->data);
+    if (root->exist == false)
+        printf("k");
+    printf("\n");
 
     // Рекурсивный вызов для всех потомков текущего узла
     printTree(root->firstChild, depth + 1);
@@ -187,3 +193,72 @@ void printTree(TNode* root, int depth) { // глубина всегда в на�
     // Рекурсивный вызов для всех братьев текущего узла
     printTree(root->nextBrother, depth);
 }
+
+void disableNode(TNode *node) { // отключаем узел
+    if (node == NULL) {
+        return;
+    }
+
+    // Отключаем текущий узел
+    node->exist = false;
+
+    // Рекурсивно отключаем всех потомков
+    disableNode(node->firstChild);
+    disableNode(node->nextBrother);
+}
+
+void disableOneNode(TNode *node) {
+    node->exist = false;
+}
+
+// чтобы вызвать удаление каждого потомка при команде kill
+// void getAllChildren(TNode *node, int **childrenArray, int *size) {
+//     if (node == NULL || !node->exist) {
+//         *size = 0;
+//         *childrenArray = NULL;
+//         return;
+//     }
+
+//     // Рекурсивно считаем количество всех потомков
+//     int count = 0;
+//     TNode *currentChild = node->firstChild;
+//     while (currentChild != NULL) {
+//         count++;
+//         currentChild = currentChild->nextBrother;
+//     }
+
+//     // Выделяем память под массив всех потомков
+//     *size = count;
+//     *childrenArray = (int *)malloc(count * sizeof(int));
+
+//     // Рекурсивно заполняем массив значениями data всех потомков
+//     currentChild = node->firstChild;
+//     for (int i = 0; i < count; i++) {
+//         (*childrenArray)[i] = currentChild->data;
+
+//         // Рекурсивно получаем всех потомков потомка
+//         int childSize;
+//         int *childArray;
+//         getAllChildren(currentChild, &childArray, &childSize);
+
+//         // Добавляем их в массив
+//         int newSize = *size + childSize;
+//         *childrenArray = (int *)realloc(*childrenArray, newSize * sizeof(int));
+
+//         for (int j = 0; j < childSize; j++) {
+//             (*childrenArray)[i + j + 1] = childArray[j];
+//         }
+
+//         *size = newSize;
+//         i += childSize;
+
+//         // Освобождаем память для массива потомков потомка
+//         free(childArray);
+
+//         currentChild = currentChild->nextBrother;
+//     }
+// }
+// Node *root = createNode(1);
+// int *childrenArray;
+// int size;
+// getAllChildren(root, &childrenArray, &size);
