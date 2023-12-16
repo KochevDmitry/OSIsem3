@@ -120,8 +120,6 @@ int main(){
                 printf("This node is dead or doesn`t exist ever\n");
             }
             else{
-                int *childrenArray;
-                int size;
 
                 zmq_send(publisher, input, strlen(input), 0);
                 
@@ -130,7 +128,6 @@ int main(){
                 disableNode(node4->firstChild);
                 disableOneNode(node4);
 
-                free(childrenArray);
              
             }
         }
