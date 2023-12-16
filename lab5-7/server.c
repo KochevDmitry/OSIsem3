@@ -50,7 +50,7 @@ int main(){
 
     char input[256];
     char command[60]; // массив для ввода команды
-    pid_t * my_forks = (pid_t*)malloc(100 * sizeof(pid_t)); // 100 дочерних процессов
+    // pid_t * my_forks = (pid_t*)malloc(100 * sizeof(pid_t)); // 100 дочерних процессов
     int count_of_forks = 0;
     int param1, param2;
     TNode *root = createNode(-1);
@@ -144,7 +144,7 @@ int main(){
     zmq_send(publisher, message2, strlen(message2), 0);
     printTree(root, 0);
     freeTree(root);
-    free(my_forks);
+    // free(my_forks);
     zmq_close(publisher);
     zmq_ctx_destroy(context);
 
