@@ -3,7 +3,7 @@
 #include <string.h>
 
 // Максимальное количество значений в массиве
-#define MAX_VALUES 10
+#define MAX_VALUES 100
 
 // Структура для представления записи в словаре
 struct KeyValuePair {
@@ -112,4 +112,21 @@ char* getNextValue(struct Dictionary* dictionary, const char* key, const char* c
         }
     }
     return NULL;  // Если ключ или значение не найдены
+}
+
+void removeFromDictionary(struct Dictionary *dictionary, const char *key) {
+    for (int i = 0; i < dictionary->entryCount; ++i) {
+        if (strcmp(dictionary->entries[i].key, key) == 0) {
+            // Нашли запись с ключом, удаляем её
+            for (int j = i; j < dictionary->entryCount - 1; ++j) {
+                // Сдвигаем оставшиеся записи влево
+                strcpy(dictionary->entries[j].key, dictionary->entries[j + 1].key);
+                memcpy(dictionary->entries[j].values, dictionary->entries[j + 1].values, sizeof(dictionary->entries[j].values));
+                dictionary->entries[j].valueCount = dictionary->entries[j + 1].valueCount;
+            }
+            // Уменьшаем количество записей
+            dictionary->entryCount--;
+            break;
+        }
+    }
 }
