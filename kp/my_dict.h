@@ -130,3 +130,26 @@ void removeFromDictionary(struct Dictionary *dictionary, const char *key) {
         }
     }
 }
+
+void removePersonFromGameDictionary(struct Dictionary *dictionary, const char *key, const char *valueToRemove) {
+    for (int i = 0; i < dictionary->entryCount; ++i) {
+        if (strcmp(dictionary->entries[i].key, key) == 0) {
+            // Нашли запись с указанным ключом
+            for (int j = 0; j < dictionary->entries[i].valueCount; ++j) {
+                if (strcmp(dictionary->entries[i].values[j], valueToRemove) == 0) {
+                    // Нашли строку для удаления из массива значений
+                    // Сдвигаем оставшиеся элементы массива
+                    for (int k = j; k < dictionary->entries[i].valueCount - 1; ++k) {
+                        strcpy(dictionary->entries[i].values[k], dictionary->entries[i].values[k + 1]);
+                    }
+                    // Уменьшаем счетчик значений
+                    dictionary->entries[i].valueCount--;
+                    printf("String '%s' removed from key '%s'\n", valueToRemove, key);
+                    return;
+                }
+            }
+        }
+    }
+
+    printf("String '%s' not found for key '%s'\n", valueToRemove, key);
+}
