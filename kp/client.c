@@ -92,7 +92,7 @@ int main(){
         }
 
     }
-    printf("You can write this:\n newgame [name of game] - create new game\n connect [name of game] - connect to another game\n");
+    printf("You can write this:\n newgame [name of game] - create new game\n connect [name of game] - connect to another game\n leave - if you want to leave the game\n");
 
     while (1) {
         memset(buffer, 0, sizeof(buffer)); // очищаем buffer
@@ -192,6 +192,20 @@ int main(){
                 
 
                 sscanf(input, "%s", result);
+
+                // если хочет покинуть игру
+                if (strcmp(result, "leave") == 0){
+                    memset(message, 0, sizeof(message));
+                    sprintf(message, "LeaveGame %s %s %d", name_my_game, my_name, id_message); // создаем строку message
+                    // printf("DEBUG CLIENT: message try answer: %s;\n", message);
+                    zmq_send(publisher, message, strlen(message), 0);
+                    id_message++;
+                    in_a_game = 0;
+                    can_write = 1;
+                    printf("You leave the game\nPlease, create new game or connect\n");
+                    continue;
+                }
+
                 memset(message, 0, sizeof(message));
                 sprintf(message, "TryAnswer %s %s %s %d", name_my_game, my_name, result, id_message); // создаем строку message
                 // printf("DEBUG CLIENT: message try answer: %s;\n", message);
@@ -238,6 +252,12 @@ int main(){
                     }
                     else if( strcmp(possible_name_game, name_my_game) == 0 ){
                         printf("Waiting player: %s\n", possible_name);
+                    }
+                }
+                else if(strcmp(command, "LeaveGAME") == 0){
+                    sscanf(buffer, "%*s %s %s",possible_name_game, possible_name);
+                    if(strcmp(possible_name_game, name_my_game) == 0 ){
+                        printf("Player '%s' leave the game\n", possible_name);
                     }
                 }
                 else if(strcmp(command, "ServerWasKilled") == 0){
