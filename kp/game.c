@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <zmq.h> // gcc game.c -o game -lzmq
@@ -12,9 +13,29 @@ char my_name[100];
 #define GAME_PORT "tcp://127.0.0.1:5557" // клиенты отправляет сообщения серверу
 #define SERVER_PORT "tcp://127.0.0.1:5555" // сервер отправляет сообщения клиентам
 
+void generateRandomString() {
+    // Символы, которые могут быть использованы в строке
+    const char charset[] = "abcdefghijklmnopqrstuvwxyz";
+
+    // Инициализация генератора случайных чисел
+    srand((unsigned int)time(NULL));
+
+    // Генерация случайных символов
+    for (int i = 0; i < 4; ++i) {
+        int index = rand() % (sizeof(charset) - 1);
+        word[i] = charset[index];
+    }
+
+    // Добавляем завершающий символ '\0'
+    // result[4] = '\0';
+}   
+
 int main(int argc, const char *argv[]){
 
     int id_message = 0;
+
+    generateRandomString();
+    printf("DEBUG GAME: answer is %s\n", word);
 
     if (argc > 1) {
         // Копируем переданное имя в глобальную строку
