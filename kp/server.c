@@ -170,6 +170,28 @@ int main(){
                 }
 
             }
+            else if(strcmp(command, "LeaveGame") == 0){
+                memset(name_of_game, 0, sizeof(name_of_game));
+                memset(name_of_client, 0, sizeof(name_of_client));
+                sscanf(buffer_client, "%*s %s %s", name_of_game, name_of_client);
+                //дальше отправляем клиенту его ход
+                memset(nextValue, 0, sizeof(nextValue));
+                // nextValue = getNextValue(&my_dict, name_of_game, name_of_client);
+                strcpy(nextValue,  getNextValue(&my_dict, name_of_game, name_of_client));
+                if (nextValue != NULL){
+                    memset(message, 0, sizeof(message));
+                    sprintf(message, "LeaveGAME %s %s", name_of_game, name_of_client); // создаем строку message
+                    zmq_send(publisher, message, strlen(message), 0);
+
+                    printf("DEBUG SERVER: nextValue: %s;\n", nextValue);
+
+                    memset(message, 0, sizeof(message));
+                    sprintf(message, "YourTurn %s %s", name_of_game, nextValue); // создаем строку message
+                    zmq_send(publisher, message, strlen(message), 0);
+                }
+
+                removePersonFromGameDictionary(&my_dict, name_of_game, name_of_client);
+            }
 
             strcpy(lastMessage, buffer_client);
             printf("DEBUG SERVER: lastMessage: %s; buffer_client: %s;\n", lastMessage, buffer_client);
