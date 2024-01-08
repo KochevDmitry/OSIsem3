@@ -92,6 +92,7 @@ int main(){
         }
 
     }
+    printf("You can write this:\n newgame [name of game] - create new game\n connect [name of game] - connect to another game\n");
 
     while (1) {
         memset(buffer, 0, sizeof(buffer)); // очищаем buffer
@@ -109,7 +110,7 @@ int main(){
 
             if (can_write){
                 if (fgets(input, sizeof(input), stdin) == NULL) { // Считываем вводную строку (NULL)
-                    printf("adios");
+                    printf("adios\n");
                     exit(0);
                 }
 
