@@ -204,6 +204,8 @@ int main(){
             }
             else if(strcmp(command, "Win") == 0){
                 zmq_send(publisher, buffer_game, strlen(buffer_game), 0);
+                sscanf(buffer_game, "%*s %s", name_of_game);
+                removeFromDictionary(&my_dict, name_of_game);
             }
 
             strcpy(lastMessage, buffer_game);
